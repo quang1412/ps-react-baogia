@@ -40,30 +40,20 @@ const PricingDetail = () => {
   const navigate = useNavigate();
 
   const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-  const handleGoBack = () => { navigate('/pricing') };
+  // const handleShow = () => setShowModal(true);
+  const handleGoBack = () => { navigate('/danh-sach-bao-gia') };
 
   useEffect(() => {
-    
     const fetchData = async () => {
-      try {
-        const id = window.atob(searchParams.get('id'))
-
-        const response = await fetch(`https://docs.google.com/spreadsheets/d/1B0lsfTAz0T2YL2-J5D3ufloYwqlJeZbdqxn06VRbTno/gviz/tq?tqx=out:json&tq&gid=${id}&range=A:F&headers=1`)
-        if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
-
-        const text = await response.text()
+      new Promise(resolve => resolve(window.atob(searchParams.get('id')))).then(id => (
+        fetch(`https://docs.google.com/spreadsheets/d/1B0lsfTAz0T2YL2-J5D3ufloYwqlJeZbdqxn06VRbTno/gviz/tq?tqx=out:json&tq&gid=${id}&range=A:F&headers=1`)
+      )).then(res => res.text()).then(text => {
         const cleanedText = text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(", "").slice(0, -2)
         const jsonData = JSON.parse(cleanedText)
-
-        console.log(jsonData)
-
         const headers = jsonData.table.cols.map((c) => c.label)
-        console.log(headers)
         const { rows } = jsonData.table
-        console.log(rows)
         if(!rows.length) { throw new Error(`Dữ liệu không hợp lệ`) }
-
+        
         const priceDate = rows[0].c[4].f || rows[0].c[4].v
         setDateOfPrice(priceDate);
         const priceType = rows[0].c[5].f || rows[0].c[5].v
@@ -84,12 +74,14 @@ const PricingDetail = () => {
         const array = [firstHalf, secondHalf]
 
         setData(array)
-      } catch (error) {
+
+      }).catch(error => {
         setError(error.message)
-      } finally {
+      }).finally( e => {
         setLoading(false)
-      }
+      });
     }
+
     fetchData()
   }, []) 
 
@@ -140,14 +132,16 @@ const PricingDetail = () => {
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 return (
-                                  <OverlayTrigger key={key} placement="top" overlay={
-                                      <Tooltip id={'tooltip-'+key}>{model} / {mem}</Tooltip>
-                                  }>
-                                    <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
-                                    {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
-                                    {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
-                                    </Col>
-                                  </OverlayTrigger>
+                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button" >
+                                    <OverlayTrigger key={key} placement="top" overlay={
+                                        <Tooltip id={'tooltip-'+key}>{model} / {mem}</Tooltip>
+                                    }>
+                                      <div className=' d-flex'>
+                                      {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
+                                      {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
+                                      </div>
+                                    </OverlayTrigger>
+                                  </Col>
                                 )
                               })}
                             </Row>
