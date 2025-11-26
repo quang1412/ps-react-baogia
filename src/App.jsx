@@ -18,12 +18,12 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/danh-sach-bao-gia" element={<Pricing />} />
 
           {/* Optional: Handle 404 Not Found pages */}
           <Route path="*" element={<div>404 Not Found</div>} />
         </Route>
-        <Route path="/pricing-detail" element={<PricingDetail />} />
+        <Route path="/bao-gia" element={<PricingDetail />} />
       </Routes>
     </Router>
   )

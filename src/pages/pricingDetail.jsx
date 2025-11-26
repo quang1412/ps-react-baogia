@@ -26,12 +26,12 @@ const PricingDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
-  const [itemsArr, setItemsArr] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dateOfPrice, setDateOfPrice] = useState('-');
+  const [typeOfPrice, setTypeOfPrice] = useState('-');
 
-  const [dataJson, setDataJson] = useState([]);
+  // const [dataJson, setDataJson] = useState([]);
 
   const navigate = useNavigate();
 
@@ -39,13 +39,13 @@ const PricingDetail = () => {
   const handleShow = () => setShowModal(true);
   const handleGoBack = () => { navigate('/pricing') };
 
-
   useEffect(() => {
-    const fetchData = async (id) => {
+    
+    const fetchData = async () => {
       try {
-        setLoading(true)
+        const id = window.atob(searchParams.get('id'))
 
-        const response = await fetch(`https://docs.google.com/spreadsheets/d/1B0lsfTAz0T2YL2-J5D3ufloYwqlJeZbdqxn06VRbTno/gviz/tq?tqx=out:json&tq&gid=${id}&range=A:D&headers=1`)
+        const response = await fetch(`https://docs.google.com/spreadsheets/d/1B0lsfTAz0T2YL2-J5D3ufloYwqlJeZbdqxn06VRbTno/gviz/tq?tqx=out:json&tq&gid=${id}&range=A:F&headers=1`)
         if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
 
         const text = await response.text()
@@ -60,13 +60,18 @@ const PricingDetail = () => {
         console.log(rows)
         if(!rows.length) { throw new Error(`Dữ liệu không hợp lệ`) }
 
-        const itemsArr = rows.map((r) => {
+        const priceDate = rows[0].c[4].f || rows[0].c[4].v
+        setDateOfPrice(priceDate);
+        const priceType = rows[0].c[5].f || rows[0].c[5].v
+        setTypeOfPrice(priceType)
+
+        window.itemsArr = rows.map((r) => {
           return r.c.reduce((accumulator, currentValue, currentIndex) => {
-            accumulator[headers[currentIndex]] = currentValue.v
+            accumulator[headers[currentIndex]] = currentValue?.v
             return accumulator
           }, {})
         })
-        setItemsArr(itemsArr)
+
         const modelAll = [...new Set(itemsArr.map((item) => item.model))]
 
         const middleIndex = Math.ceil(modelAll.length / 2)
@@ -81,45 +86,39 @@ const PricingDetail = () => {
         setLoading(false)
       }
     }
-
-  try{
-    fetchData(window.atob(searchParams.get('id')))
-  } catch(error){
-    setError(error.message)
-    setLoading(false)
-  } finally {
-  }
-
+    fetchData()
   }, []) 
 
   return (
-    <Container fluid className='p-4' style={{'width': '100vw'}} >
-      <style>{`html{font-size: 1.2vw;} .row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: #121212; color: #fff; }`}</style>
+    <Container fluid className='p-4' >
+      <style>{`html{font-size: 1.3vw} .row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: #121212; color: #fff; }`}</style>
+      <style>{'div[class*="border"] { border-left-width: .1rem !important; border-top-width: .1rem !important; border-right-width: .1rem !important; border-bottom-width: .1rem !important; }'}</style>
+      
+      <div >
+        <div className='mb-3'>
+          <Button size="lg" variant="outline-secondary" onClick={handleGoBack}>Back</Button>
+        </div>
 
-      <div className='mb-3'>
-        <Button size="lg" variant="outline-secondary" onClick={handleGoBack}>Back</Button>
+        <h3>PS / Báo giá</h3>
+        <p id="time mb-3">Update: {dateOfPrice} / {typeOfPrice}</p>
       </div>
 
-      <h3>Pricing detail</h3>
-      {/* <p>id: {idValue} / {idDecode}</p> */}
-      <p id="time mb-3">2025</p>
-
       <div className='h100 w-100 d-flex justify-content-center align-items-center'>
-        {loading && <div className="spinner-border" style={{'width': '3rem', 'height': '3rem'}} role="status">
+        <div className="spinner-border" style={{'width': '3rem', 'height': '3rem', 'display': loading ? 'block' : 'none'}} role="status">
           <span className="visually-hidden">Loading...</span>
-        </div>}
-        {error && <p className='text-danger'>⚠️ {error}</p>}
+        </div>
+        <p className='text-danger' style={{display: error ? 'block' : 'none'}}>⚠️ {error}</p>
       </div>
 
       <Row >
         {data.map((models, i0) => (
-          <Col xs={6} md={6} key={"part" + i0}>
+          <Col xs={6} md={6}>
             {models.map((model, i1) => {
-              const memsOfModel = [...new Set(itemsArr.filter((i) => i.model == model).map((i) => i.mem)),];
-              const colorsOfModel = [...new Set(itemsArr.filter((i) => i.model == model).map((i) => i.color)),];
+              const memsOfModel = [...new Set(window.itemsArr.filter((i) => i.model == model).map((i) => i.mem)),];
+              const colorsOfModel = [...new Set(window.itemsArr.filter((i) => i.model == model).map((i) => i.color)),];
               const groupColors = groupByN(3, colorsOfModel)
               return (
-                <div className="px-2"><Row key={"model" + i1} data-model={model} className=" border-top border-start bg-light mb-3">
+                <div className="mx-1 mb-3"><Row key={"model" + i1} data-model={model} className=" border-top border-start  shadow ">
                   <Col xs={3} className="fw-bolder border-end border-bottom d-flex align-items-center p-2 model" style={{'fontSize':'1.3em'}}>
                     <div><span>{model}</span></div>
                   </Col>
@@ -134,7 +133,7 @@ const PricingDetail = () => {
                             <Row>
                               {[0, 1, 2].map((i4) => {
                                 const color = cgr[i4] || ""
-                                const price = itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
+                                const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
 
                                 return (
                                   <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
