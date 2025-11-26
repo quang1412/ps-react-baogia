@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Modal, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-import myData from "./data.json";
+// import myData from "./data.json";
+ 
 
 const groupByN = (n, arr) => {
   const result = []
@@ -20,47 +21,99 @@ const formatter = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 2, // Limit to a maximum of 2 decimal places
 })
 
-const headers = myData.table.cols.map((c) => c.label)
-const { rows } = myData.table
-const itemsArr = rows.map((r) => {
-  return r.c.reduce((accumulator, currentValue, currentIndex) => {
-    accumulator[headers[currentIndex]] = currentValue.v
-    return accumulator
-  }, {})
-})
-const modelAll = [...new Set(itemsArr.map((item) => item.model))]
-
-const middleIndex = Math.ceil(modelAll.length / 2)
-const firstHalf = modelAll.slice(0, middleIndex)
-const secondHalf = modelAll.slice(middleIndex)
-const array = [firstHalf, secondHalf];
-
-
 
 const PricingDetail = () => {
-  const [showModal, setShowModal] = useState(false); // Initial state: modal is hidden
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showModal, setShowModal] = useState(false);
+  const [data, setData] = useState([]);
+  const [itemsArr, setItemsArr] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [dataJson, setDataJson] = useState([]);
+
   const navigate = useNavigate();
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
-  const handleGoBack = () => {
-    navigate(-1); // Navigates one step back in history
-  };
+  const handleGoBack = () => { navigate('/pricing') };
+
+
+  useEffect(() => {
+    const fetchData = async (id) => {
+      try {
+        setLoading(true)
+
+        const response = await fetch(`https://docs.google.com/spreadsheets/d/1B0lsfTAz0T2YL2-J5D3ufloYwqlJeZbdqxn06VRbTno/gviz/tq?tqx=out:json&tq&gid=${id}&range=A:D&headers=1`)
+        if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
+
+        const text = await response.text()
+        const cleanedText = text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(", "").slice(0, -2)
+        const jsonData = JSON.parse(cleanedText)
+
+        console.log(jsonData)
+
+        const headers = jsonData.table.cols.map((c) => c.label)
+        console.log(headers)
+        const { rows } = jsonData.table
+        console.log(rows)
+        if(!rows.length) { throw new Error(`Dữ liệu không hợp lệ`) }
+
+        const itemsArr = rows.map((r) => {
+          return r.c.reduce((accumulator, currentValue, currentIndex) => {
+            accumulator[headers[currentIndex]] = currentValue.v
+            return accumulator
+          }, {})
+        })
+        setItemsArr(itemsArr)
+        const modelAll = [...new Set(itemsArr.map((item) => item.model))]
+
+        const middleIndex = Math.ceil(modelAll.length / 2)
+        const firstHalf = modelAll.slice(0, middleIndex)
+        const secondHalf = modelAll.slice(middleIndex)
+        const array = [firstHalf, secondHalf]
+
+        setData(array)
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+  try{
+    fetchData(window.atob(searchParams.get('id')))
+  } catch(error){
+    setError(error.message)
+    setLoading(false)
+  } finally {
+  }
+
+  }, []) 
 
   return (
-    <Container fluid className='p-4' >
-      <style>{`html{font-size: 1vw;} .row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: #121212; color: #fff; }`}</style>
+    <Container fluid className='p-4' style={{'width': '100vw'}} >
+      <style>{`html{font-size: 1.2vw;} .row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: #121212; color: #fff; }`}</style>
 
       <div className='mb-3'>
-        <Button variant="outline-secondary" onClick={handleGoBack}>Back</Button>
+        <Button size="lg" variant="outline-secondary" onClick={handleGoBack}>Back</Button>
       </div>
 
       <h3>Pricing detail</h3>
+      {/* <p>id: {idValue} / {idDecode}</p> */}
       <p id="time mb-3">2025</p>
 
+      <div className='h100 w-100 d-flex justify-content-center align-items-center'>
+        {loading && <div className="spinner-border" style={{'width': '3rem', 'height': '3rem'}} role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>}
+        {error && <p className='text-danger'>⚠️ {error}</p>}
+      </div>
+
       <Row >
-        {array.map((models, i0) => (
-          <Col xs={6} key={"part" + i0}>
+        {data.map((models, i0) => (
+          <Col xs={6} md={6} key={"part" + i0}>
             {models.map((model, i1) => {
               const memsOfModel = [...new Set(itemsArr.filter((i) => i.model == model).map((i) => i.mem)),];
               const colorsOfModel = [...new Set(itemsArr.filter((i) => i.model == model).map((i) => i.color)),];
@@ -102,7 +155,8 @@ const PricingDetail = () => {
           </Col>
         ))}
       </Row>
-      <Modal size='sm' show={showModal} onHide={handleClose}>
+      <style>{`.modal-dialog{ max-width: 50vw; margin-left: auto; margin-right: auto; }`}</style>
+      <Modal  show={showModal} onHide={handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Thông tin chi tiết</Modal.Title>
           </Modal.Header>
