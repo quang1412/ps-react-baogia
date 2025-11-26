@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Modal, Button } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Container, Modal, Button } from 'react-bootstrap';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
+
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -134,12 +138,16 @@ const PricingDetail = () => {
                               {[0, 1, 2].map((i4) => {
                                 const color = cgr[i4] || ""
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
-
+                                const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 return (
-                                  <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
+                                  <OverlayTrigger key={key} placement="top" overlay={
+                                      <Tooltip id={'tooltip-'+key}>{model} / {mem}</Tooltip>
+                                  }>
+                                    <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
                                     {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                     {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
-                                  </Col>
+                                    </Col>
+                                  </OverlayTrigger>
                                 )
                               })}
                             </Row>
