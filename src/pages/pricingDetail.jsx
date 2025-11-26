@@ -35,8 +35,6 @@ const PricingDetail = () => {
   const [dateOfPrice, setDateOfPrice] = useState('-');
   const [typeOfPrice, setTypeOfPrice] = useState('-');
 
-  // const [dataJson, setDataJson] = useState([]);
-
   const navigate = useNavigate();
 
   const handleClose = () => setShowModal(false);
@@ -87,7 +85,8 @@ const PricingDetail = () => {
 
   return (
     <Container fluid className='p-4' >
-      <style>{`html{font-size: 1.3vw} .row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: #121212; color: #fff; }`}</style>
+      <style>{'html{font-size: 1.3vw}'}</style>
+      <style>{`.row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: lightgray; }`}</style>
       <style>{'div[class*="border"] { border-left-width: .1rem !important; border-top-width: .1rem !important; border-right-width: .1rem !important; border-bottom-width: .1rem !important; }'}</style>
       
       <div >
@@ -96,7 +95,7 @@ const PricingDetail = () => {
         </div>
 
         <h3>PS / Báo giá</h3>
-        <p id="time mb-3">Update: {dateOfPrice} / {typeOfPrice}</p>
+        <p id="time mb-3">Time: {dateOfPrice} / {typeOfPrice}</p>
       </div>
 
       <div className='h100 w-100 d-flex justify-content-center align-items-center'>
@@ -134,7 +133,7 @@ const PricingDetail = () => {
                                 return (
                                   <Col xs={4} className="border-end border-bottom p-2 color-price" role="button" >
                                     <OverlayTrigger key={key} placement="top" overlay={
-                                        <Tooltip id={'tooltip-'+key}>{model} / {mem}</Tooltip>
+                                        <Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>
                                     }>
                                       <div className=' d-flex'>
                                       {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
