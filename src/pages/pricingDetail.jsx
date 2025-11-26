@@ -137,7 +137,7 @@ const PricingDetail = () => {
                                 const price = itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
 
                                 return (
-                                  <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" onClick={handleShow}>
+                                  <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
                                     {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                     {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
                                   </Col>
