@@ -3,15 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Modal, Button } from 'react-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-
-
-
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 // import myData from "./data.json";
  
-
 const groupByN = (n, arr) => {
   const result = []
   for (let i = 0; i < arr.length; i += n) {
@@ -131,16 +127,12 @@ const PricingDetail = () => {
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 return (
-                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button" >
-                                    <OverlayTrigger key={key} placement="top" overlay={
-                                        <Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>
-                                    }>
-                                      <div className=' d-flex'>
+                                  <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>}>
+                                    <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
                                       {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                       {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
-                                      </div>
-                                    </OverlayTrigger>
-                                  </Col>
+                                    </Col>
+                                  </OverlayTrigger>
                                 )
                               })}
                             </Row>

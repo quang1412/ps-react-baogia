@@ -7,7 +7,7 @@ const MainLayout = () => {
     <>
       <MainNavbar />
       
-      <Container>
+      <Container className="py-4">
         <Outlet />
       </Container>
     </>

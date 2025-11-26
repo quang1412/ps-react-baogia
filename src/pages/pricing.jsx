@@ -30,19 +30,20 @@ const Pricing = () => {
 
   return (
     <>
-      <h3>Pricing</h3>
-      <div className='h100 w-100 d-flex justify-content-center align-items-center'>
-        <div className="spinner-border" style={{'width': '3rem', 'height': '3rem', 'display': loading ? 'block' : 'none'}} role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <p className='text-danger' style={{display: error ? 'block' : 'none'}}>⚠️ {error}</p>
-      </div>
+      <h3>Báo giá</h3>
       <ul>
         {data.map(arr => {
           const [date, url] = arr;
           return <li><a href={url}>{date}</a></li>
         })}
       </ul>
+
+      <div className='m-3'>
+        <div className="spinner-border text-primary" style={{'display': loading ? 'block' : 'none'}} role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className='text-danger' style={{display: error ? 'block' : 'none'}}>⚠️ {error}</p>
+      </div>
     </>
   )
 }
