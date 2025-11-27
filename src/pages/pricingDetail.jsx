@@ -127,12 +127,14 @@ const PricingDetail = () => {
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 return (
-                                  <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>}>
-                                    <Col xs={4} className="border-end border-bottom d-flex p-2 color-price" role="button" >
-                                      {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
-                                      {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
-                                    </Col>
-                                  </OverlayTrigger>
+                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button" >
+                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem} - {color}</Tooltip>}>
+                                      <div className='d-flex'>
+                                        {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
+                                        {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
+                                      </div>
+                                    </OverlayTrigger>
+                                  </Col>
                                 )
                               })}
                             </Row>
