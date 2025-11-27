@@ -82,7 +82,7 @@ const PricingDetail = () => {
   return (
     <Container fluid className='p-4'>
       <style>{'html{font-size: 1.3vw}'}</style>
-      <style>{`.row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: lightgray; }`}</style>
+      <style>{`.row[data-mem]:has(.color-price:not(:empty):hover) > div:first-child, .color-price:not(:empty):hover{ background: lightgray; }`}</style>
       <style>{'div[class*="border"] { border-left-width: .15rem !important; border-top-width: .15rem !important; border-right-width: .15rem !important; border-bottom-width: .15rem !important; }'}</style>
       
       <div >
@@ -110,13 +110,13 @@ const PricingDetail = () => {
               const groupColors = groupByN(3, colorsOfModel)
               return (
                 <div className="mx-1 mb-3"><Row key={"model" + i1} data-model={model} className=" border-top border-start  shadow ">
-                  <Col xs={3} className="fw-bolder border-end border-bottom d-flex align-items-center p-2 model" style={{'fontSize':'1.3em'}}>
+                  <Col xs={3} className="fw-bolder border-end border-bottom d-flex align-items-center p-1 model" style={{'fontSize':'1.3em'}}>
                     <div><span>{model}</span></div>
                   </Col>
                   <Col>
                     {memsOfModel.map((mem, i2) => (
                       <Row data-mem={mem}>
-                        <Col xs={2} className="border-end border-bottom d-flex align-items-center p-2 mem">
+                        <Col xs={2} className="border-end border-bottom d-flex align-items-center p-1 mem">
                           <div>{mem}</div>
                         </Col>
                         <Col>
@@ -128,8 +128,8 @@ const PricingDetail = () => {
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 const variation = {model, mem, color, price, "qty":1}
                                 return (
-                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button">
-                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>}>
+                                  <Col xs={4} className="border-end border-bottom p-1 color-price" role="button">
+                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}><b>{model}</b> - {mem}</Tooltip>}>
                                       <div className='d-flex'>
                                         {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                         {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
