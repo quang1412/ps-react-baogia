@@ -34,7 +34,7 @@ const PricingDetail = () => {
   const navigate = useNavigate();
 
   const handleClose = () => setShowModal(false);
-  // const handleShow = () => setShowModal(true);
+  const handleShow = () => setShowModal(true);
   const handleGoBack = () => { navigate('/danh-sach-bao-gia') };
 
   useEffect(() => {
@@ -80,10 +80,10 @@ const PricingDetail = () => {
   }, []) 
 
   return (
-    <Container fluid className='p-4' >
+    <Container fluid className='p-4'>
       <style>{'html{font-size: 1.3vw}'}</style>
       <style>{`.row:is([data-mem], [data-model]):has(.color-price:not(:empty):hover) > div:first-child:before { color: var(--bs-danger, red); content: "►"; position: absolute; transform: translateX(-1em); } .color-price:not(:empty):hover{ background: lightgray; }`}</style>
-      <style>{'div[class*="border"] { border-left-width: .1rem !important; border-top-width: .1rem !important; border-right-width: .1rem !important; border-bottom-width: .1rem !important; }'}</style>
+      <style>{'div[class*="border"] { border-left-width: .15rem !important; border-top-width: .15rem !important; border-right-width: .15rem !important; border-bottom-width: .15rem !important; }'}</style>
       
       <div >
         <div className='mb-3'>
@@ -101,7 +101,7 @@ const PricingDetail = () => {
         <p className='text-danger' style={{display: error ? 'block' : 'none'}}>⚠️ {error}</p>
       </div>
 
-      <Row >
+      <Row>
         {data.map((models, i0) => (
           <Col xs={6} md={6}>
             {models.map((model, i1) => {
@@ -126,9 +126,10 @@ const PricingDetail = () => {
                                 const color = cgr[i4] || ""
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
+                                const variation = {model, mem, color, price, "qty":1}
                                 return (
-                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button" >
-                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem} - {color}</Tooltip>}>
+                                  <Col xs={4} className="border-end border-bottom p-2 color-price" role="button">
+                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}>{model} - {mem}</Tooltip>}>
                                       <div className='d-flex'>
                                         {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                         {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}

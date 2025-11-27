@@ -34,7 +34,7 @@ const Pricing = () => {
       <ul>
         {data.map(arr => {
           const [date, url] = arr;
-          return <li><a href={url}>{date}</a></li>
+          return <li><a href={url}>Cập nhật {date}</a></li>
         })}
       </ul>
 
