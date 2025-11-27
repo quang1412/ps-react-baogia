@@ -128,7 +128,7 @@ const PricingDetail = () => {
                                 const variation = {model, mem, color, price, "qty":1}
                                 return (
                                   <Col xs={4} className="col border-end border-bottom p-0 d-flex align-items-center" role="button">
-                                    {color ? <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}><b>{model}</b> - {mem}</Tooltip>}>
+                                    {color ? <OverlayTrigger key={key} transition={false} placement="top" overlay={<Tooltip id={'tooltip-'+key}><b>{model}</b> - {mem}</Tooltip>}>
                                       <div className='color-price d-flex w-100 p-1'>
                                         {color ? <div className='color text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
                                         {price ? <div className="price text-danger">{formatter.format(price)}</div> : <></>}
