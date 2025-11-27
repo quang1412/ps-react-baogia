@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Modal, Button } from 'react-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Toast from 'react-bootstrap/Toast';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-// import myData from "./data.json";
- 
 const groupByN = (n, arr) => {
   const result = []
   for (let i = 0; i < arr.length; i += n) {
@@ -82,7 +81,7 @@ const PricingDetail = () => {
   return (
     <Container fluid className='p-4'>
       <style>{'html{font-size: 1.3vw}'}</style>
-      <style>{`.row[data-mem]:has(.color-price:not(:empty):hover) > div:first-child, .color-price:not(:empty):hover{ background: lightgray; }`}</style>
+      <style>{`.col:has(> .color-price:not(:empty)):hover{ background: lightyellow; }`}</style>
       <style>{'div[class*="border"] { border-left-width: .15rem !important; border-top-width: .15rem !important; border-right-width: .15rem !important; border-bottom-width: .15rem !important; }'}</style>
       
       <div >
@@ -110,31 +109,31 @@ const PricingDetail = () => {
               const groupColors = groupByN(3, colorsOfModel)
               return (
                 <div className="mx-1 mb-3"><Row key={"model" + i1} data-model={model} className=" border-top border-start  shadow ">
-                  <Col xs={3} className="fw-bolder border-end border-bottom d-flex align-items-center p-1 model" style={{'fontSize':'1.3em'}}>
+                  <Col xs={3} className="model fw-bolder border-end border-bottom d-flex align-items-center p-1 text-center" style={{'fontSize':'1.2em'}}>
                     <div><span>{model}</span></div>
                   </Col>
                   <Col>
                     {memsOfModel.map((mem, i2) => (
-                      <Row data-mem={mem}>
-                        <Col xs={2} className="border-end border-bottom d-flex align-items-center p-1 mem">
+                      <Row data-mem={mem} style={{'height': 100/memsOfModel.length+'%'}}>
+                        <Col xs={2} className="col border-end border-bottom d-flex align-items-center p-1 mem">
                           <div>{mem}</div>
                         </Col>
                         <Col>
                           {groupColors.map((cgr, i3) => (
-                            <Row>
+                            <Row style={{'height': 100/groupColors.length+'%'}}>
                               {[0, 1, 2].map((i4) => {
                                 const color = cgr[i4] || ""
                                 const price = window.itemsArr.find((i) => i.model == model && i.mem == mem && i.color == color )?.price || ""
                                 const key = (model + '-' + mem + '-' + color + '-' + i4);
                                 const variation = {model, mem, color, price, "qty":1}
                                 return (
-                                  <Col xs={4} className="border-end border-bottom p-1 color-price" role="button">
-                                    <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}><b>{model}</b> - {mem}</Tooltip>}>
-                                      <div className='d-flex'>
-                                        {color ? <div className='text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
-                                        {price ? <div className="text-danger">{formatter.format(price)}</div> : <></>}
+                                  <Col xs={4} className="col border-end border-bottom p-0 d-flex align-items-center" role="button">
+                                    {color ? <OverlayTrigger key={key} placement="top" overlay={<Tooltip id={'tooltip-'+key}><b>{model}</b> - {mem}</Tooltip>}>
+                                      <div className='color-price d-flex w-100 p-1'>
+                                        {color ? <div className='color text-nowrap' style={{'width': '50%'}}>{color}</div> : <></>}
+                                        {price ? <div className="price text-danger">{formatter.format(price)}</div> : <></>}
                                       </div>
-                                    </OverlayTrigger>
+                                    </OverlayTrigger> : <></>}
                                   </Col>
                                 )
                               })}
